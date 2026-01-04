@@ -5,10 +5,20 @@ function App() {
   const names = ['reshmi', 'bub', 'slug', 'terry', 'bob']
   const [currentIndex, setCurrentIndex] = useState(0)
   const [currentSection, setCurrentSection] = useState(0)
+  const [hasSwipedDown, setHasSwipedDown] = useState(false)
+  const [showSwipeDownIndicator, setShowSwipeDownIndicator] = useState(false)
   const touchStartX = useRef(0)
   const touchEndX = useRef(0)
   const touchStartY = useRef(0)
   const touchEndY = useRef(0)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSwipeDownIndicator(true)
+    }, 5000)
+
+    return () => clearTimeout(timer)
+  }, [])
 
   const handleTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX
@@ -33,6 +43,7 @@ function App() {
     if (Math.abs(swipeDistanceY) > Math.abs(swipeDistanceX)) {
       if (swipeDistanceY > minSwipeDistance && currentSection === 0) {
         // Swipe down - cycle to next name
+        setHasSwipedDown(true)
         setCurrentIndex((prev) => (prev + 1) % names.length)
       } else if (swipeDistanceY < -minSwipeDistance && currentSection === 0) {
         // Swipe up - cycle to previous name
@@ -80,6 +91,7 @@ function App() {
     if (Math.abs(swipeDistanceY) > Math.abs(swipeDistanceX)) {
       if (swipeDistanceY > minSwipeDistance && currentSection === 0) {
         // Drag down - cycle to next name
+        setHasSwipedDown(true)
         setCurrentIndex((prev) => (prev + 1) % names.length)
       } else if (swipeDistanceY < -minSwipeDistance && currentSection === 0) {
         // Drag up - cycle to previous name
@@ -121,6 +133,7 @@ function App() {
       
       if (e.deltaY > 0) {
         // Swipe down - cycle to next name
+        setHasSwipedDown(true)
         setCurrentIndex((prev) => (prev + 1) % names.length)
       } else {
         // Swipe up - cycle to previous name
@@ -156,6 +169,9 @@ function App() {
                 </span>
               ))}
             </span>
+            {isReshmi && !hasSwipedDown && showSwipeDownIndicator && (
+              <span className="swipe-down-indicator">swipe down for a surprise!</span>
+            )}
           </h1>
           <div className="swipe-indicator">
             swipe left! →
